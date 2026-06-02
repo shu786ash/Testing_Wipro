@@ -18,33 +18,25 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                dir('CucumberBDD2') {
-                    bat 'mvn clean test'
-                }
+                bat 'mvn clean test'
             }
         }
 
         stage('Package') {
             steps {
-                dir('CucumberBDD2') {
-                    bat 'mvn package -DskipTests'
-                }
+                bat 'mvn package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                dir('CucumberBDD2') {
-                    bat 'docker build -t cucumber-framework .'
-                }
+                bat 'docker build -t cucumber-framework .'
             }
         }
 
         stage('Docker Run') {
             steps {
-                dir('CucumberBDD2') {
-                    bat 'docker run --rm cucumber-framework'
-                }
+                bat 'docker run --rm cucumber-framework'
             }
         }
     }
@@ -53,9 +45,9 @@ pipeline {
 
         always {
             junit allowEmptyResults: true,
-                  testResults: 'CucumberBDD2/target/junitreports/*.xml'
+                  testResults: 'target/junitreports/*.xml'
 
-            archiveArtifacts artifacts: 'CucumberBDD2/target/*/.*',
+            archiveArtifacts artifacts: 'target/**/*',
                              fingerprint: true
         }
 
