@@ -1,55 +1,70 @@
 pipeline {
 
-```
-agent any
+    agent any
 
-tools {
-    maven 'Maven3'
-    jdk 'JDK 21'
-}
+    tools {
+        maven 'Maven3'
+        jdk 'JDK 21'
+    }
 
-stages {
+    stages {
 
-    stage('Checkout') {
-        steps {
-            git branch: 'master',
-            url: 'https://github.com/shu786ash/Testing_Wipro.git'
+        stage('Checkout') {
+            steps {
+                git branch: 'master',
+                    url: 'https://github.com/shu786ash/Testing_Wipro.git'
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                dir('CucumberBDD2') {
+                    bat 'mvn clean test'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                dir('CucumberBDD2') {
+                    bat 'mvn package -DskipTests'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('CucumberBDD2') {
+                    bat 'docker build -t cucumber-framework .'
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                dir('CucumberBDD2') {
+                    bat 'docker run --rm cucumber-framework'
+                }
+            }
         }
     }
 
-    stage('Build & Test') {
-        steps {
-            bat 'mvn clean test'
+    post {
+
+        always {
+            junit allowEmptyResults: true,
+                  testResults: 'CucumberBDD2/target/junitreports/*.xml'
+
+            archiveArtifacts artifacts: 'CucumberBDD2/target/*/.*',
+                             fingerprint: true
+        }
+
+        success {
+            echo 'Build Successful'
+        }
+
+        failure {
+            echo 'Build Failed'
         }
     }
-
-    stage('Package') {
-        steps {
-            bat 'mvn package -DskipTests'
-        }
-    }
-
-}
-
-post {
-
-    always {
-
-        junit allowEmptyResults: true,
-              testResults: 'target/junitreports/*.xml'
-
-        archiveArtifacts artifacts: 'target/**/*.*',
-                         fingerprint: true
-    }
-
-    success {
-        echo 'Build Successful'
-    }
-
-    failure {
-        echo 'Build Failed'
-    }
-}
-```
-
 }

@@ -4,14 +4,25 @@ import java.time.Duration;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Hook {
 
     public static WebDriver driver;
 
     public void setup() {
+    	
+    	
+    	   WebDriverManager.chromedriver().setup();
+    	ChromeOptions options = new ChromeOptions();
 
-        driver = new ChromeDriver();
+    	options.addArguments("--headless=new");
+    	options.addArguments("--no-sandbox");
+    	options.addArguments("--disable-dev-shm-usage");
+
+    	driver = new ChromeDriver(options);
 
         driver.manage().window().maximize();
 

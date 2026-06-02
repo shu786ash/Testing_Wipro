@@ -450,7 +450,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.asserts.SoftAssert;
-
+import java.time.Duration;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import Hooks.Hook;
 import POM_Test.Page;
 import io.cucumber.java.After;
@@ -512,16 +514,19 @@ public class Ninja_Cart {
     public void search_product(String product)
     throws InterruptedException {
 
-        WebElement searchBox =
-        driver.findElement(By.name("search"));
+        WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement searchBox = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.name("search")));
 
         searchBox.clear();
-
         searchBox.sendKeys(product);
 
         driver.findElement(
-        By.cssSelector("button.btn-default.btn-lg"))
-        .click();
+                By.cssSelector("button.btn-default.btn-lg"))
+                .click();
 
         Thread.sleep(2000);
     }
